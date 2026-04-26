@@ -1,0 +1,18 @@
+[
+  {
+    "Author": "Someone",
+    "Name": "MultiBoxConflict",
+    "InternalName": "MultiBoxConflict",
+    "Punchline": "All for one",
+    "Description": "/mbc",
+    "AssemblyVersion": "1.0.0.0",
+    "ApplicableVersion": "any",
+    "DalamudApiLevel": 14,
+    "DownloadLinkInstall": "https://github.com/MarcoPirrelli/MultiBoxConflict/releases/latest/download/latest.zip",
+    "DownloadLinkUpdate": "https://github.com/MarcoPirrelli/MultiBoxConflict/releases/latest/download/latest.zip",
+    "Tags": [
+      "automation",
+      "pvp"
+    ]
+  }
+]
