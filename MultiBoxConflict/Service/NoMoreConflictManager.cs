@@ -106,7 +106,11 @@ public unsafe class MultiBoxConflictManager : IDisposable
             && Conditions.Instance()->HasPermission(119) 
             && Conditions.Instance()->HasPermission(120))
         {
-            ContentsFinder.Instance()->QueueInfo.QueueRoulette(40);
+            if (Config.AddQueueDelay)
+                TaskManager.EnqueueDelay(1000);
+            TaskManager.Enqueue(()=>{
+                ContentsFinder.Instance()->QueueInfo.QueueRoulette(40);
+            });
             PluginStatus = "in_queue";
             return;
         }
