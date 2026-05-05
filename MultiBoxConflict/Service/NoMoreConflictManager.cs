@@ -18,6 +18,7 @@ using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Event;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using Lumina.Excel.Sheets;
 using MultiBoxConflict.Service.CCMaps;
@@ -106,12 +107,27 @@ public unsafe class MultiBoxConflictManager : IDisposable
             && Conditions.Instance()->HasPermission(119) 
             && Conditions.Instance()->HasPermission(120))
         {
-            if (Config.AddQueueDelay)
-                TaskManager.EnqueueDelay(1000);
-            TaskManager.Enqueue(()=>{
-                ContentsFinder.Instance()->QueueInfo.QueueRoulette(40);
-            });
-            PluginStatus = "in_queue";
+            if (GenericHelpers.TryGetAddonByName("ContentsFinder", out AtkUnitBase* addonContentsFinder) && GenericHelpers.IsAddonReady(addonContentsFinder))
+            {
+                var selected = AgentContentsFinder.Instance()->SelectedContent;
+                if (selected.Count == 1 && selected[0].Id == 40)
+                {
+                    PluginStatus = "in_queue";
+                    if (Config.AddQueueDelay)
+                        TaskManager.EnqueueDelay(1000);
+                    
+                    TaskManager.Enqueue(()=>{
+                        Callback.Fire(addonContentsFinder, true, 12, 0); //join
+                    });
+                }
+                else
+                {
+                    Callback.Fire(addonContentsFinder, true, 3, 1); //click duty
+                }
+            }
+            else
+                AgentContentsFinder.Instance()->OpenRouletteDuty(40); //open duty finder
+            
             return;
         }
         
@@ -458,7 +474,21 @@ public unsafe class MultiBoxConflictManager : IDisposable
     
     public unsafe void Debug()
     {
-        Svc.Log.Debug(Svc.Data.GetExcelSheet<LogMessage>()[7392].Text.ToString());
+        if (GenericHelpers.TryGetAddonByName("ContentsFinder", out AtkUnitBase* addonContentsFinder) && GenericHelpers.IsAddonReady(addonContentsFinder))
+        {
+            var selected = AgentContentsFinder.Instance()->SelectedContent;
+            if (selected.Count == 1 && selected[0].Id == 40)
+            {
+                Callback.Fire(addonContentsFinder, true, 12, 0);
+            }
+            else
+            {
+                Callback.Fire(addonContentsFinder, true, 3, 1);
+            }
+        }
+        else
+            AgentContentsFinder.Instance()->OpenRouletteDuty(40);
+        
     }
     
     public void Dispose()
