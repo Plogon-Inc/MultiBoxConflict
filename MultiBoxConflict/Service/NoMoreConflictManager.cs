@@ -1,7 +1,9 @@
 using System;
 using System.Linq;
 using System.Numerics;
+using Dalamud.Game.Chat;
 using Dalamud.Game.ClientState.Objects.Types;
+using Dalamud.Game.DutyState;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Plugin.Services;
@@ -42,11 +44,27 @@ public unsafe class MultiBoxConflictManager : IDisposable
                 Svc.DutyState.DutyCompleted += OnDutyEnd;
                 Svc.ClientState.TerritoryChanged += OnTerritoryChange;
                 Svc.Chat.ChatMessage += CheckForMessage;
+                
+                Chat.ExecuteCommand("/rotation Settings PvpStateControl true");
+                Chat.ExecuteCommand("/rotation ToggleActions Standard-issue Elixir false");
+                Chat.ExecuteCommand("/rotation Settings PoslockCasting true");
+                Chat.ExecuteCommand("/rotation Settings AutoOffAfterCombat false");
+                Chat.ExecuteCommand("/rotation Settings AutoOffWhenDeadPvP false");
+                Chat.ExecuteCommand("/rotation Settings FilterStopMark false");
+                
                 Map = GetMap(Config.DesiredTeam);
                 PluginStatus = Map == null ? "idle" : "match";
-                if (Map != null) Map.DutyStartTime = DateTime.Now;
-                MatchStatus = "skirmish";
-                Aggro.Reset();
+                if (Map != null)
+                {
+                    Map.DutyStartTime = DateTime.Now;
+
+                    var playerNames = Svc.Objects.PlayerObjects.Select(p => p.Name.TextValue);
+                    HasExternalPlayers = !Config.RegisteredCharacters.ContainsAll(playerNames);
+                    MatchStatus = (Config.Wintrade && !HasExternalPlayers && Config.RegisteredLosers.Contains(Svc.PlayerState.CharacterName)) ? "anti_afk" : "skirmish";
+                    
+                    Aggro.Reset();
+                    PvPActionManager.Reset();
+                }
             }
             else
             {
@@ -61,6 +79,7 @@ public unsafe class MultiBoxConflictManager : IDisposable
 
     public string PluginStatus = "idle";
     public string MatchStatus = "match_start";
+    public bool HasExternalPlayers = false;
     public DateTime? LastHealFail;
     public CrystallineConflictMap? Map;
 
@@ -83,8 +102,9 @@ public unsafe class MultiBoxConflictManager : IDisposable
             Utils.DisplayDotMap();
         }
 
-        if (PluginStatus == "idle" && Conditions.Instance()->HasPermission(119) &&
-            Conditions.Instance()->HasPermission(120))
+        if (PluginStatus == "idle" 
+            && Conditions.Instance()->HasPermission(119) 
+            && Conditions.Instance()->HasPermission(120))
         {
             ContentsFinder.Instance()->QueueInfo.QueueRoulette(40);
             PluginStatus = "in_queue";
@@ -237,6 +257,14 @@ public unsafe class MultiBoxConflictManager : IDisposable
                 }
                 break;
             
+            case "anti_afk":
+                if (EzThrottler.Check("AntiAfkJump"))
+                {
+                    EzThrottler.Throttle("AntiAfkJump", 30000);
+                    ActionManager.Instance()->UseAction(ActionType.GeneralAction, 2);
+                }
+                break;
+            
             default:
                 Map.SkirmishMove();
                 break;
@@ -247,7 +275,7 @@ public unsafe class MultiBoxConflictManager : IDisposable
     {
         if (Splatoon.IsConnected())
         {
-            foreach (var obj in Svc.Objects.Where(o => o.ObjectKind != ObjectKind.Player)){
+            foreach (var obj in Svc.Objects.Where(o => o.ObjectKind != ObjectKind.Pc)){
                 var ele = new Element(ElementType.CircleRelativeToActorPosition);
                 ele.refActorName = obj.Name.TextValue;
                 var text = obj.Name.TextValue;
@@ -307,31 +335,36 @@ public unsafe class MultiBoxConflictManager : IDisposable
             "The Clockwork Castletown" => new TheClockworkCastletown(Config, givenPos),
             "The Red Sands" => new TheRedSands(Config, givenPos),
             "The Bayside Battleground" => new TheBaysideBattleground(Config, givenPos),
+            "Archeia Harmonias" => new ArcheiaHarmonias(Config, givenPos),
             _ => null
         };
         return map;
     }
     
-    public void OnDutyStart(object? sender, ushort @ushort)
+    public void OnDutyStart(IDutyStateEventArgs args)
     {
         Map = GetMap();
         if (Map != null)
         {
             Map.ExitSpawnFlag = 0;
             Map.DutyStartTime = DateTime.Now;
+            
+            Chat.ExecuteCommand("/rotation Auto");
+            PluginStatus = "match";
+            var playerNames = Svc.Objects.PlayerObjects.Select(p => p.Name.TextValue);
+            HasExternalPlayers = !Config.RegisteredCharacters.ContainsAll(playerNames);
+            MatchStatus = (Config.Wintrade && !HasExternalPlayers && Config.RegisteredLosers.Contains(Svc.PlayerState.CharacterName)) ? "anti_afk" : "match_start";
+            
+            Aggro.Reset();
+            PvPActionManager.Reset();
         }
-        Chat.ExecuteCommand("/rotation Auto");
-        PluginStatus = "match";
-        MatchStatus = "match_start";
-        Aggro.Reset();
-        PvPActionManager.Reset();
     }
     
-    public void OnDutyEnd(object? sender, ushort @ushort)
+    public void OnDutyEnd(IDutyStateEventArgs args)
     {
         EventFramework.LeaveCurrentContent(true);
         Map = null;
-        if (FinishAfteNext)
+        if (FinishAfteNext || (Config.Wintrade && HasExternalPlayers))
         {
             IsRunning = false;
             FinishAfteNext = false;
@@ -339,19 +372,48 @@ public unsafe class MultiBoxConflictManager : IDisposable
         PluginStatus = "idle";
     }
 
-    public void OnTerritoryChange(ushort obj)
+    public void OnTerritoryChange(uint obj)
     {
         Map = null;
         MatchStatus = "none";
     }
     
-    private unsafe void CheckForMessage(XivChatType type, int timestamp, ref SeString sender, ref SeString message, ref bool isHandled) {
-        if (type is XivChatType.ErrorMessage && message.TextValue.ToString() == Svc.Data.GetExcelSheet<LogMessage>()[7392].Text.ToString()) {
+    private void CheckForMessageOld(XivChatType type, int timestamp, ref SeString sender, ref SeString message, ref bool isHandled) {
+        if (type is XivChatType.ErrorMessage && message.TextValue == Svc.Data.GetExcelSheet<LogMessage>()[7392].Text.ToString()) {
             Svc.Log.Debug("Arena change error occured");
             TaskManager.EnqueueDelay(500);
             TaskManager.Enqueue(()=>
             {
                 Svc.Log.Information("CC Arena Changed Error - Trying to requeue");
+                PluginStatus = "idle";
+            });
+        }
+        else if (type is XivChatType.ErrorMessage)
+        {
+            Svc.Log.Debug("Error trying to queue up - Trying to requeue");
+            TaskManager.EnqueueDelay(500);
+            TaskManager.Enqueue(()=>
+            {
+                PluginStatus = "idle";
+            });
+        }
+    }
+    private void CheckForMessage(IHandleableChatMessage chatMessage) {
+        if (chatMessage.LogKind is XivChatType.ErrorMessage && chatMessage.Message.TextValue == Svc.Data.GetExcelSheet<LogMessage>()[7392].Text.ToString()) {
+            Svc.Log.Debug("Arena change error occured");
+            TaskManager.EnqueueDelay(500);
+            TaskManager.Enqueue(()=>
+            {
+                Svc.Log.Information("CC Arena Changed Error - Trying to requeue");
+                PluginStatus = "idle";
+            });
+        }
+        else if (chatMessage.LogKind is XivChatType.ErrorMessage)
+        {
+            Svc.Log.Debug("Error trying to queue up - Trying to requeue");
+            TaskManager.EnqueueDelay(500);
+            TaskManager.Enqueue(()=>
+            {
                 PluginStatus = "idle";
             });
         }
@@ -392,6 +454,7 @@ public unsafe class MultiBoxConflictManager : IDisposable
     
     public unsafe void Debug()
     {
+        Svc.Log.Debug(Svc.Data.GetExcelSheet<LogMessage>()[7392].Text.ToString());
     }
     
     public void Dispose()

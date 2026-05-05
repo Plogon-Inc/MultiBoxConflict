@@ -8,11 +8,13 @@ namespace MultiBoxConflict.Windows;
 public class MainWindow : Window, IDisposable
 {
     private Plugin Plugin;
+    private Configuration Configuration;
 
     public MainWindow(Plugin plugin)
-        : base("MultiBoxConflict##0", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse)
+        : base("MultiBoxConflict##0", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse)
     {
         Plugin = plugin;
+        Configuration = plugin.Configuration;
     }
 
     public void Dispose() { }

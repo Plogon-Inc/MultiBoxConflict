@@ -181,7 +181,7 @@ public abstract class CrystallineConflictMap
             float score = 0;
             
             if (Vector3.DistanceSquared(point, tacticalCrystal.Position) <= 625) score += 5;
-            if (DateTime.Now - DutyStartTime >= TimeSpan.FromSeconds(30) && Vector3.DistanceSquared(point, tacticalCrystal.Position) <= 16)
+            if ((DateTime.Now - DutyStartTime >= TimeSpan.FromSeconds(30) || Config.Wintrade) && Vector3.DistanceSquared(point, tacticalCrystal.Position) <= 16)
             {
                 score += 2f;
                 if(!allies.Any(a=>Vector3.DistanceSquared(a.Position, tacticalCrystal.Position) <= 17.64)){

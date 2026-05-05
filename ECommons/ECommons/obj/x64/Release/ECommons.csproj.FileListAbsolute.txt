@@ -1,0 +1,13 @@
+C:\Users\marco\OneDrive\Desktop\projects\MultiBoxConflict\ECommons\ECommons\bin\Release\ECommons.deps.json
+C:\Users\marco\OneDrive\Desktop\projects\MultiBoxConflict\ECommons\ECommons\bin\Release\ECommons.dll
+C:\Users\marco\OneDrive\Desktop\projects\MultiBoxConflict\ECommons\ECommons\bin\Release\ECommons.pdb
+C:\Users\marco\OneDrive\Desktop\projects\MultiBoxConflict\ECommons\ECommons\bin\Release\ECommons.xml
+C:\Users\marco\OneDrive\Desktop\projects\MultiBoxConflict\ECommons\ECommons\obj\x64\Release\ECommons.csproj.AssemblyReference.cache
+C:\Users\marco\OneDrive\Desktop\projects\MultiBoxConflict\ECommons\ECommons\obj\x64\Release\ECommons.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\marco\OneDrive\Desktop\projects\MultiBoxConflict\ECommons\ECommons\obj\x64\Release\ECommons.AssemblyInfoInputs.cache
+C:\Users\marco\OneDrive\Desktop\projects\MultiBoxConflict\ECommons\ECommons\obj\x64\Release\ECommons.AssemblyInfo.cs
+C:\Users\marco\OneDrive\Desktop\projects\MultiBoxConflict\ECommons\ECommons\obj\x64\Release\ECommons.csproj.CoreCompileInputs.cache
+C:\Users\marco\OneDrive\Desktop\projects\MultiBoxConflict\ECommons\ECommons\obj\x64\Release\ECommons.sourcelink.json
+C:\Users\marco\OneDrive\Desktop\projects\MultiBoxConflict\ECommons\ECommons\obj\x64\Release\ECommons.dll
+C:\Users\marco\OneDrive\Desktop\projects\MultiBoxConflict\ECommons\ECommons\obj\x64\Release\ECommons.xml
+C:\Users\marco\OneDrive\Desktop\projects\MultiBoxConflict\ECommons\ECommons\obj\x64\Release\ECommons.pdb

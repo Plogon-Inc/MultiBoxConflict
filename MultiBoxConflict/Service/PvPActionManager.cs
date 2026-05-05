@@ -451,6 +451,129 @@ public static class PvPActionManager
             maxHp: 0.95f,
             minAggro: 800
         ),
+        
+        new GameAction(
+            "Meteostrike",
+            "Monk",
+            29485,
+            minEnemies: 2,
+            enemyCheckRange: 20,
+            minAllies: 2,
+            allyCheckRange: 25,
+            minHp: 0.5f,
+            minMp: 0.2f,
+            maxAggro: 1000
+        ),
+        
+        new GameAction(
+            "Thunderclap",
+            "Monk",
+            29485,
+            minAllies: 1,
+            allyCheckRange: 25,
+            minMp: 0.4f,
+            maxAggro: 800,
+            customCondition: () =>
+            {
+                var localPlayer = Svc.Objects.LocalPlayer;
+                if (localPlayer == null)
+                {
+                    Svc.Log.Error("Could not find local player");
+                    return false;
+                }
+                
+                var tacticalCrystal = Svc.Objects.FirstOrDefault(o => o.Name.TextValue == "Tactical Crystal");
+                if (tacticalCrystal == null)
+                {
+                    Svc.Log.Error("Could not find Tactical Crystal object");
+                    return false;
+                }
+                
+                if(Vector3.DistanceSquared(localPlayer.Position, tacticalCrystal.Position) > 900) return false;
+                
+                unsafe
+                {
+                    if (localPlayer.TargetObject == null
+                        || ActionManager.GetActionInRangeOrLoS(29485, localPlayer.GameObject(),
+                            localPlayer.TargetObject.Struct()) != 0)
+                        return false;
+                }
+
+                var targetId = localPlayer.TargetObjectId;
+                var targetEnemy = Utils.GetEnemiesAlive().Where(e => e.GameObjectId == targetId).ToList();
+                if (targetEnemy.Count == 0) return false;
+                var target = targetEnemy.First();
+                if (target.StatusList.Select(s => s.StatusId)
+                    .Intersect([PvPStatus.Guard, PvPStatus.Covered, PvPStatus.SkyHigh]).Any()) return false;
+
+                var allies = Utils.GetAlliesAlive();
+                return allies.Any(a => Vector3.DistanceSquared(a.Position, tacticalCrystal.Position) <= 49) 
+                       || Vector3.DistanceSquared(localPlayer.Position, tacticalCrystal.Position) > 49
+                       || Vector3.DistanceSquared(target.Position, tacticalCrystal.Position) <= 49;
+            }
+        ),
+        
+        new GameAction(
+            "Phalanx",
+            "Paladin",
+            29069,
+            minAllies: 2,
+            allyCheckRange: 15,
+            maxHp:0.5f,
+            maxMp: 0.8f,
+            minAggro: 600
+        ),
+        
+        new GameAction(
+            "Intervene",
+            "Paladin",
+            29065,
+            minAllies: 1,
+            allyCheckRange: 25,
+            minEnemies: 1,
+            enemyCheckRange: 20,
+            minHp:0.6f,
+            minMp: 0.4f,
+            maxAggro: 1000,
+            customCondition: () =>
+            {
+                var localPlayer = Svc.Objects.LocalPlayer;
+                if (localPlayer == null)
+                {
+                    Svc.Log.Error("Could not find local player");
+                    return false;
+                }
+                
+                var tacticalCrystal = Svc.Objects.FirstOrDefault(o => o.Name.TextValue == "Tactical Crystal");
+                if (tacticalCrystal == null)
+                {
+                    Svc.Log.Error("Could not find Tactical Crystal object");
+                    return false;
+                }
+                
+                if(Vector3.DistanceSquared(localPlayer.Position, tacticalCrystal.Position) > 900) return false;
+                
+                unsafe
+                {
+                    if (localPlayer.TargetObject == null
+                        || ActionManager.GetActionInRangeOrLoS(29065, localPlayer.GameObject(),
+                            localPlayer.TargetObject.Struct()) != 0)
+                        return false;
+                }
+
+                var targetId = localPlayer.TargetObjectId;
+                var targetEnemy = Utils.GetEnemiesAlive().Where(e => e.GameObjectId == targetId).ToList();
+                if (targetEnemy.Count == 0) return false;
+                var target = targetEnemy.First();
+                if (target.StatusList.Select(s => s.StatusId)
+                    .Intersect([PvPStatus.Guard, PvPStatus.Covered, PvPStatus.SkyHigh]).Any()) return false;
+
+                var allies = Utils.GetAlliesAlive();
+                return allies.Any(a => Vector3.DistanceSquared(a.Position, tacticalCrystal.Position) <= 49) 
+                       || Vector3.DistanceSquared(localPlayer.Position, tacticalCrystal.Position) > 49
+                       || Vector3.DistanceSquared(target.Position, tacticalCrystal.Position) <= 49;
+            }
+        ),
     ];
 
     public static bool Execute(GameAction action)

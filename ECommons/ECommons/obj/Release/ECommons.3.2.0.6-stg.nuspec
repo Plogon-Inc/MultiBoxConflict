@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>ECommons</id>
+    <version>3.2.0.6-stg</version>
+    <title>ECommons</title>
+    <authors>NightmareXIV</authors>
+    <projectUrl>https://github.com/NightmareXIV/ECommons</projectUrl>
+    <description>Package Description</description>
+    <repository type="git" url="https://github.com/NightmareXIV/ECommons" commit="59c0ce6caf0faf291fec18adcf3a35a3cc7e842e" />
+    <dependencies>
+      <group targetFramework="net10.0-windows7.0" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="C:\Users\marco\OneDrive\Desktop\projects\MultiBoxConflict\ECommons\ECommons\bin\Release\ECommons.dll" target="lib\net10.0-windows7.0\ECommons.dll" />
+    <file src="C:\Users\marco\OneDrive\Desktop\projects\MultiBoxConflict\ECommons\ECommons\bin\Release\ECommons.xml" target="lib\net10.0-windows7.0\ECommons.xml" />
+  </files>
+</package>

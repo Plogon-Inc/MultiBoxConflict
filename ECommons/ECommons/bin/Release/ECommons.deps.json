@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "ECommons/3.2.0.6-stg": {
+        "runtime": {
+          "ECommons.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "ECommons/3.2.0.6-stg": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
