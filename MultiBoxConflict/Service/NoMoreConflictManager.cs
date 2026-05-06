@@ -105,7 +105,7 @@ public unsafe class MultiBoxConflictManager : IDisposable
         }
         
         var localPlayer = Svc.Objects.LocalPlayer;
-        if (localPlayer != null && Config.PulseQueueIfWinner && !Config.RegisteredLosers.Contains(localPlayer.Name.TextValue) && PluginStatus == "in_queue" && EzThrottler.Throttle("Requeue pulse", 500))
+        if (localPlayer != null && Config.PulseQueueIfWinner && !Config.RegisteredLosers.Contains(localPlayer.Name.TextValue) && PluginStatus == "in_queue" && EzThrottler.Throttle("Requeue pulse", 2000))
             PluginStatus = "idle";
             
 
