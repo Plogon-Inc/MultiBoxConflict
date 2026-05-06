@@ -17,6 +17,7 @@ public class Configuration : IPluginConfiguration
     public bool DisplayDotMap = false;
     public bool AddQueueDelay = true;
     public bool KeepPlayingWithExternals = false;
+    public bool TeamUp = false;
     public ushort? DesiredTeam = null;
 
     public List<String> RegisteredCharacters = [];
