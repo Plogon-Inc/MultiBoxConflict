@@ -384,7 +384,7 @@ public unsafe class MultiBoxConflictManager : IDisposable
     {
         EventFramework.LeaveCurrentContent(true);
         Map = null;
-        if (FinishAfteNext || (Config.Wintrade && HasExternalPlayers))
+        if (FinishAfteNext || (Config.Wintrade && HasExternalPlayers && Config.KeepPlayingWithExternals))
         {
             IsRunning = false;
             FinishAfteNext = false;

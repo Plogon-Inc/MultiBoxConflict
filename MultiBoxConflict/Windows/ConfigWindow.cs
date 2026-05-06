@@ -46,6 +46,7 @@ public class ConfigWindow : Window, IDisposable
         if (ImGui.Checkbox("Display position markers", ref Configuration.DisplayPositionMarkers)) Configuration.Save();
         if (ImGui.Checkbox("Display 10 yalm dot map", ref Configuration.DisplayDotMap)) Configuration.Save();
         if (ImGui.Checkbox("Add queue delay", ref Configuration.AddQueueDelay)) Configuration.Save();
+        if (ImGui.Checkbox("Keep playing with externals", ref Configuration.KeepPlayingWithExternals)) Configuration.Save();
         string desiredTeamString = Configuration.DesiredTeam.HasValue ? Configuration.DesiredTeam.Value.ToString() : "";
         ImGui.Dummy(new Vector2(0, 10));
         ImGui.SetNextItemWidth(50);
