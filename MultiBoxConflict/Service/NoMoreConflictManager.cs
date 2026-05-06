@@ -374,7 +374,7 @@ public unsafe class MultiBoxConflictManager : IDisposable
             var playerNames = Svc.Objects.PlayerObjects.Select(p => p.Name.TextValue);
             HasExternalPlayers = !Config.RegisteredCharacters.ContainsAll(playerNames);
             MatchStatus = (Config.Wintrade && !HasExternalPlayers && Config.RegisteredLosers.Contains(Svc.PlayerState.CharacterName)) ? "anti_afk" : "match_start";
-            if(MatchStatus == "anti_afk" && Config.TeamUp && Svc.Objects.PlayerObjects.Any(o => !o.IsDead && !o.IsHostile() && Config.RegisteredCharacters.Contains(o.Name.TextValue)))
+            if(Config.RegisteredCharacters.Count > 0 && MatchStatus == "anti_afk" && Config.TeamUp && Svc.Objects.PlayerObjects.Where(o => !o.IsDead && !o.IsHostile()).Select(o=>o.Name.TextValue).Contains(Config.RegisteredCharacters[0]))
                 MatchStatus = "match_start";
             
             Aggro.Reset();
