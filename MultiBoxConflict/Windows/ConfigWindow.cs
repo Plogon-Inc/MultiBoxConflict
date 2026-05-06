@@ -45,6 +45,8 @@ public class ConfigWindow : Window, IDisposable
         if (ImGui.Checkbox("Display entity markers", ref Configuration.DisplayEntityMarkers)) Configuration.Save();
         if (ImGui.Checkbox("Display position markers", ref Configuration.DisplayPositionMarkers)) Configuration.Save();
         if (ImGui.Checkbox("Display 10 yalm dot map", ref Configuration.DisplayDotMap)) Configuration.Save();
+        ImGui.Dummy(new Vector2(0, 10));
+        if (ImGui.Checkbox("Is party leader", ref Configuration.IsPartyLeader)) Configuration.Save();
         if (ImGui.Checkbox("Add queue delay", ref Configuration.AddQueueDelay)) Configuration.Save();
         if (ImGui.Checkbox("Keep playing with externals", ref Configuration.KeepPlayingWithExternals)) Configuration.Save();
         if (ImGui.Checkbox("Team up to win", ref Configuration.TeamUp)) Configuration.Save();

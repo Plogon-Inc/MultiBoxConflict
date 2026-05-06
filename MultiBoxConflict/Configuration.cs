@@ -15,6 +15,8 @@ public class Configuration : IPluginConfiguration
     public bool DisplayEntityMarkers = false;
     public bool DisplayPositionMarkers = false;
     public bool DisplayDotMap = false;
+    
+    public bool IsPartyLeader = true;
     public bool AddQueueDelay = true;
     public bool KeepPlayingWithExternals = false;
     public bool TeamUp = false;

@@ -111,7 +111,8 @@ public unsafe class MultiBoxConflictManager : IDisposable
 
         if (PluginStatus == "idle" 
             && Conditions.Instance()->HasPermission(119) 
-            && Conditions.Instance()->HasPermission(120))
+            && Conditions.Instance()->HasPermission(120)
+            && Config.IsPartyLeader)
         {
             if (GenericHelpers.TryGetAddonByName("ContentsFinder", out AtkUnitBase* addonContentsFinder) && GenericHelpers.IsAddonReady(addonContentsFinder))
             {
@@ -120,7 +121,7 @@ public unsafe class MultiBoxConflictManager : IDisposable
                 {
                     PluginStatus = "in_queue";
                     if (Config.AddQueueDelay)
-                        TaskManager.EnqueueDelay(1000);
+                        TaskManager.EnqueueDelay(500);
                     
                     TaskManager.Enqueue(()=>{
                         Callback.Fire(addonContentsFinder, true, 12, 0); //join
