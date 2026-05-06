@@ -23,6 +23,7 @@ using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using Lumina.Excel.Sheets;
 using MultiBoxConflict.Service.CCMaps;
+using MultiBoxConflict.Service.IPC;
 using ObjectKind = Dalamud.Game.ClientState.Objects.Enums.ObjectKind;
 
 namespace MultiBoxConflict.Service;
@@ -32,6 +33,8 @@ public unsafe class MultiBoxConflictManager : IDisposable
     public Configuration Config;
     public bool FinishAfteNext = false;
     public ECommons.Automation.NeoTaskManager.TaskManager TaskManager = new ();
+    private VnavmeshIPC _vnav = new();
+    private Random _rand = new();
 
     public bool IsRunning
     {
@@ -285,10 +288,11 @@ public unsafe class MultiBoxConflictManager : IDisposable
                 break;
             
             case "anti_afk":
-                if (EzThrottler.Check("AntiAfkJump"))
+                if (EzThrottler.Check("AntiAfkMove"))
                 {
-                    EzThrottler.Throttle("AntiAfkJump", 5000);
-                    ActionManager.Instance()->UseAction(ActionType.GeneralAction, 2);
+                    EzThrottler.Throttle("AntiAfkMove", 5000);
+                    var r = (_rand.NextSingle() -0.5f) * 5;
+                    _vnav.PathfindAndMoveTo(localPlayer.Position + new Vector3(r, 0, 0), false);
                 }
                 break;
             
@@ -389,7 +393,7 @@ public unsafe class MultiBoxConflictManager : IDisposable
                 else
                     MatchStatus = "anti_afk";
             }
-            if (MatchStatus == "anti_afk") EzThrottler.Throttle("AntiAfkJump", 2000);
+            if (MatchStatus == "anti_afk") EzThrottler.Throttle("AntiAfkMove", 2000);
             
             Aggro.Reset();
             PvPActionManager.Reset();
