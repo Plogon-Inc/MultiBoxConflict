@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Numerics;
+using System.Text.RegularExpressions;
 using Dalamud.Game.Chat;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.DutyState;
@@ -374,8 +375,15 @@ public unsafe class MultiBoxConflictManager : IDisposable
             var playerNames = Svc.Objects.PlayerObjects.Select(p => p.Name.TextValue);
             HasExternalPlayers = !Config.RegisteredCharacters.ContainsAll(playerNames);
             MatchStatus = (Config.Wintrade && !HasExternalPlayers && Config.RegisteredLosers.Contains(Svc.PlayerState.CharacterName)) ? "anti_afk" : "match_start";
-            if(Config.RegisteredCharacters.Count > 0 && MatchStatus == "anti_afk" && Config.TeamUp && Svc.Objects.PlayerObjects.Where(o => !o.IsDead && !o.IsHostile()).Select(o=>o.Name.TextValue).Contains(Config.RegisteredCharacters[0]))
-                MatchStatus = "match_start";
+            if(Config.Wintrade && Config.TeamUp)
+            {
+                if (Config.RegisteredCharacters.Count > 0 && Svc.Objects.PlayerObjects.Where(o => !o.IsDead && !o.IsHostile()).Select(o => o.Name.TextValue)
+                        .Contains(Config.RegisteredCharacters[0]))
+                    MatchStatus = "match_start";
+                else
+                    MatchStatus = "anti_afk";
+            }
+            if (MatchStatus == "anti_afk") EzThrottler.Throttle("AntiAfkJump", 10000);
             
             Aggro.Reset();
             PvPActionManager.Reset();
