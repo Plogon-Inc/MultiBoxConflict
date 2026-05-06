@@ -103,6 +103,11 @@ public unsafe class MultiBoxConflictManager : IDisposable
         {
             Utils.DisplayDotMap();
         }
+        
+        var localPlayer = Svc.Objects.LocalPlayer;
+        if (localPlayer != null && Config.PulseQueueIfWinner && !Config.RegisteredLosers.Contains(localPlayer.Name.TextValue) && PluginStatus == "in_queue" && EzThrottler.Throttle("Requeue pulse", 500))
+            PluginStatus = "idle";
+            
 
         if (PluginStatus == "idle" 
             && Conditions.Instance()->HasPermission(119) 
@@ -281,7 +286,7 @@ public unsafe class MultiBoxConflictManager : IDisposable
             case "anti_afk":
                 if (EzThrottler.Check("AntiAfkJump"))
                 {
-                    EzThrottler.Throttle("AntiAfkJump", 30000);
+                    EzThrottler.Throttle("AntiAfkJump", 5000);
                     ActionManager.Instance()->UseAction(ActionType.GeneralAction, 2);
                 }
                 break;
@@ -383,7 +388,7 @@ public unsafe class MultiBoxConflictManager : IDisposable
                 else
                     MatchStatus = "anti_afk";
             }
-            if (MatchStatus == "anti_afk") EzThrottler.Throttle("AntiAfkJump", 10000);
+            if (MatchStatus == "anti_afk") EzThrottler.Throttle("AntiAfkJump", 2000);
             
             Aggro.Reset();
             PvPActionManager.Reset();
