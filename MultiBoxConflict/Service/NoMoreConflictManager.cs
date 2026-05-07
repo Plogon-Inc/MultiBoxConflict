@@ -108,7 +108,7 @@ public unsafe class MultiBoxConflictManager : IDisposable
         }
         
         var localPlayer = Svc.Objects.LocalPlayer;
-        if (localPlayer != null && Config.PulseQueueIfWinner && !Config.RegisteredLosers.Contains(localPlayer.Name.TextValue) && PluginStatus == "in_queue" && EzThrottler.Throttle("Requeue pulse", 2000))
+        if (localPlayer != null && Config.PulseQueueIfWinner && !Config.RegisteredLosers.Contains(localPlayer.Name.TextValue) && PluginStatus == "in_queue" && EzThrottler.Throttle("Requeue pulse", 3000))
             PluginStatus = "idle";
             
 
@@ -390,7 +390,8 @@ public unsafe class MultiBoxConflictManager : IDisposable
                 if (Config.RegisteredCharacters.Count > 0 && Svc.Objects.PlayerObjects.Where(o => !o.IsDead && !o.IsHostile()).Select(o => o.Name.TextValue)
                         .Contains(Config.RegisteredCharacters[0]))
                     MatchStatus = "match_start";
-                else
+                else if (Config.RegisteredCharacters.Count > 0 && Svc.Objects.PlayerObjects.Where(o => !o.IsDead && o.IsHostile()).Select(o => o.Name.TextValue)
+                             .Contains(Config.RegisteredCharacters[0]))
                     MatchStatus = "anti_afk";
             }
             if (MatchStatus == "anti_afk") EzThrottler.Throttle("AntiAfkMove", 2000);
@@ -404,7 +405,7 @@ public unsafe class MultiBoxConflictManager : IDisposable
     {
         EventFramework.LeaveCurrentContent(true);
         Map = null;
-        if (FinishAfteNext || (Config.Wintrade && HasExternalPlayers && Config.KeepPlayingWithExternals))
+        if (FinishAfteNext || (Config.Wintrade && HasExternalPlayers && !Config.KeepPlayingWithExternals))
         {
             IsRunning = false;
             FinishAfteNext = false;
