@@ -107,8 +107,7 @@ public unsafe class MultiBoxConflictManager : IDisposable
             Utils.DisplayDotMap();
         }
         
-        var localPlayer = Svc.Objects.LocalPlayer;
-        if (localPlayer != null && Config.PulseQueueIfWinner && !Config.RegisteredLosers.Contains(localPlayer.Name.TextValue) && PluginStatus == "in_queue" && EzThrottler.Throttle("Requeue pulse", 3000))
+        if (Config.PulseQueue && Config.IsPartyLeader && PluginStatus == "in_queue" && EzThrottler.Throttle("Requeue pulse", 4000))
             PluginStatus = "idle";
             
 

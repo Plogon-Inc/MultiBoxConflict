@@ -20,7 +20,7 @@ public class Configuration : IPluginConfiguration
     public bool AddQueueDelay = true;
     public bool KeepPlayingWithExternals = false;
     public bool TeamUp = false;
-    public bool PulseQueueIfWinner = true;
+    public bool PulseQueue = true;
     public ushort? DesiredTeam = null;
 
     public List<String> RegisteredCharacters = [];

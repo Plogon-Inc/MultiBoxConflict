@@ -50,7 +50,7 @@ public class ConfigWindow : Window, IDisposable
         if (ImGui.Checkbox("Add queue delay", ref Configuration.AddQueueDelay)) Configuration.Save();
         if (ImGui.Checkbox("Keep playing with externals", ref Configuration.KeepPlayingWithExternals)) Configuration.Save();
         if (ImGui.Checkbox("Team up to win", ref Configuration.TeamUp)) Configuration.Save();
-        if (ImGui.Checkbox("Pulse queue if winner", ref Configuration.PulseQueueIfWinner)) Configuration.Save();
+        if (ImGui.Checkbox("Pulse queue", ref Configuration.PulseQueue)) Configuration.Save();
         string desiredTeamString = Configuration.DesiredTeam.HasValue ? Configuration.DesiredTeam.Value.ToString() : "";
         ImGui.Dummy(new Vector2(0, 10));
         ImGui.SetNextItemWidth(50);
